@@ -1,14 +1,12 @@
 import { StatusBar } from "expo-status-bar";
 import Constants from "expo-constants";
-import { MaterialIcons } from "@expo/vector-icons";
 
 import { useState, useEffect } from "react";
-import { StyleSheet, Text, View, Image, Platform } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 
-import { AppBar, ActivityIndicator, Button } from "@react-native-material/core";
-
-import * as Sharing from "expo-sharing";
-import * as ImageManipulator from "expo-image-manipulator";
+import { AppBar } from "@react-native-material/core";
+import Controls from "./components/Controls";
+import Meme from "./components/Meme";
 
 export default function App() {
   const [subreddit, setSubreddit] = useState("");
@@ -25,16 +23,6 @@ export default function App() {
       });
   };
 
-  const shareMeme = async () => {
-    if (Platform.OS === "web") {
-      alert(`Uh oh, sharing isn't available on your platform`);
-      return;
-    }
-
-    const imageTmp = await ImageManipulator.manipulateAsync(meme);
-    await Sharing.shareAsync(imageTmp.uri);
-  };
-
   useEffect(() => fetchMeme(), []);
 
   return (
@@ -45,46 +33,11 @@ export default function App() {
         centerTitle
         color="orangered"
         titleStyle={styles.whiteTitle}
-        elevation
+        elevation={0}
       />
-      <Text style={styles.subredditText}>r/{subreddit}</Text>
-      {loading ? (
-        <ActivityIndicator
-          size="large"
-          color="orangered"
-          style={styles.loading}
-        />
-      ) : null}
-      <Image
-        source={{ uri: meme }}
-        fadeDuration={100}
-        resizeMode="contain"
-        style={{
-          width: 360,
-          height: 450,
-          alignSelf: "center",
-          display: loading ? "none" : "flex",
-        }}
-        onLoad={() => setLoading(false)}
-      />
-      <View style={styles.controls}>
-        <Button
-          title="Next"
-          titleStyle={styles.whiteTitle}
-          color="orangered"
-          trailing={() => (
-            <MaterialIcons name="arrow-forward" size={24} color="white" />
-          )}
-          onPress={fetchMeme}
-        />
-        <Button
-          title="Share"
-          titleStyle={styles.whiteTitle}
-          color="orangered"
-          trailing={() => <MaterialIcons name="send" size={24} color="white" />}
-          onPress={meme !== "" ? shareMeme : null}
-        />
-      </View>
+      <Text style={styles.subredditText}>From r/{subreddit}</Text>
+      <Meme meme={meme} loading={loading} setLoading={setLoading} />
+      <Controls fetchMeme={fetchMeme} meme={meme} />
       <StatusBar style="light" />
     </View>
   );
@@ -99,15 +52,9 @@ const styles = StyleSheet.create({
   whiteTitle: { color: "white" },
   subredditText: {
     fontSize: 20,
-    marginTop: 20,
+    fontWeight: "500",
+    marginTop: 30,
     marginBottom: 20,
     textAlign: "center",
-  },
-  loading: { height: 450 },
-  controls: {
-    marginTop: 30,
-    marginBottom: 10,
-    flexDirection: "row",
-    justifyContent: "space-evenly",
   },
 });
