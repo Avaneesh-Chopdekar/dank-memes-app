@@ -15,7 +15,7 @@ export default function App() {
 
   const fetchMeme = () => {
     setLoading(true);
-    fetch("https://meme-api.herokuapp.com/gimme")
+    fetch("https://meme-api.com/gimme")
       .then((res) => res.json())
       .then((data) => {
         setMeme(data.url);
